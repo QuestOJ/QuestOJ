@@ -1,0 +1,6 @@
+[submodule "web/qoj"]
+	path = web/qoj
+	url = https://gitee.com/QuestOJ/QuestOJ.git
+[submodule "web/manage"]
+	path = web/manage
+	url = https://gitee.com/QuestOJ/QuestOJ-Manage.git
