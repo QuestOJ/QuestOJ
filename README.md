@@ -5,7 +5,7 @@
 > 基于 [Universal Online Judge 社区版](https://github.com/UniversalOJ/UOJ-System) 修改
 
 ## 特性
-[![Build Status](https://dev.azure.com/limstash/QuestOJ/_apis/build/status/QuestOJ.QOJ?branchName=master)](https://dev.azure.com/limstash/QuestOJ/_build/latest?definitionId=2&branchName=master) [![Gitbook Status](https://api.travis-ci.org/QuestOJ/QOJ.svg)](https://api.travis-ci.org/QuestOJ/QOJ.svg)
+[![Build Status](https://dev.azure.com/limstash/QuestOJ/_apis/build/status/QuestOJ.QuestOJ?branchName=master)](https://dev.azure.com/limstash/QuestOJ/_build/latest?definitionId=3&branchName=master) [![Build Status](https://travis-ci.org/QuestOJ/QuestOJ.svg?branch=master)](https://travis-ci.org/QuestOJ/QuestOJ) [![Build Status](https://dev.azure.com/limstash/QuestOJ/_apis/build/status/QuestOJ.Manage-Tools?branchName=master)](https://dev.azure.com/limstash/QuestOJ/_build/latest?definitionId=4&branchName=master)
 
 - 全新管理后台，操作更加丰富快捷
 - 使用 AtCoder Rating System 和个性化 Rating 等级
@@ -15,5 +15,7 @@
 
 ## 链接
 - [Quest Online Judge](https://questoj.cn)
-- [QuestOJ src](https://gitee.com/QuestOJ/QuestOJ)
-- [QuestOJ Manage Platform src](https://gitee.com/QuestOJ/QuestOJ-Manage)
+- [Quest Online Judge Docs](https://docs.questoj.cn)
+- [QuestOJ Web src](https://github.com/QuestOJ/QuestOJ-Web)
+- [QuestOJ Manage Platform src](https://github.com/QuestOJ/QuestOJ-Manage)
+- [Server Manage Tools src](https://github.com/QuestOJ/Manage-Tools)

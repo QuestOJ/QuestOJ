@@ -169,6 +169,7 @@ QOJEOF
     define("API_SECRET", "$_api_secret_");
 ?>
 QOJEOF
+    cp /opt/qoj/web/manage/data/config/config.inc.php  /opt/qoj/web/manage/event/data/config.inc.php
     chown -R www-data:www-data /opt/qoj/web
     
     #Import MySQL database
