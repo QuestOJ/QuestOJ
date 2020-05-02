@@ -1,4 +1,4 @@
-<p align="center"><img src="https://gitee.com/QuestOJ/QuestOJ/raw/master/pictures/logo.png"></p>
+<p align="center"><img src="https://gitee.com/QuestOJ/QuestOJ-Web/raw/master/pictures/logo.png"></p>
 
 # Quest Online Judge
 
