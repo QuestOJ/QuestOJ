@@ -1,9 +1,9 @@
-[submodule "tools"]
-	path = tools
+[submodule "src/tool_manage"]
+	path = src/tool_manage
 	url = https://github.com/QuestOJ/Manage-Tools.git
-[submodule "web/qoj"]
-	path = web/qoj
+[submodule "src/web_oj"]
+	path = src/web_oj
 	url = https://github.com/QuestOJ/QuestOJ-Web
-[submodule "web/manage"]
-	path = web/manage
+[submodule "src/web_manage"]
+	path = src/web_manage
 	url = https://github.com/QuestOJ/QuestOJ-Manage
