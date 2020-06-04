@@ -1,22 +1,17 @@
-FROM ubuntu:18.04
+FROM ubuntu:20.04
 LABEL maintainer="QuestOJ postmaster@questoj.cn"
-ARG CLONE_ADDFLAG
 
 WORKDIR /opt
-RUN mkdir /var/www
 
 #Change sources mirror
-COPY ./sources.list /etc/apt/sources.list
-RUN rm -rf /var/lib/apt/lists/*
+COPY ./scripts/sources.list /etc/apt/sources.list
+RUN rm -rf /var/lib/apt/lists/* && apt-get update && apt-get upgrade -y && apt-get install -y git
 
 #Clone the QuestOJ
-RUN apt-get update && apt-get upgrade -y && apt-get install -y git
-COPY ./git.sh /opt
-COPY ./switch /opt
-RUN bash ./git.sh
+RUN git clone https://github.com/QuestOJ/QuestOJ.git qoj && cd qoj/ && git submodule init && git submodule update
 
-WORKDIR /opt
-RUN cd qoj/install/bundle && sh install.sh -p && echo "\
+#Install
+RUN cd qoj/install/bundle/scripts && sh install.sh -p && echo "\
 #!/bin/sh\n\
 \n\
 service ntp start\n\

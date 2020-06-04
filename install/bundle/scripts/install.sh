@@ -17,12 +17,14 @@ getAptPackage(){
     export DEBIAN_FRONTEND=noninteractive
     (echo "mysql-server mysql-server/root_password password $_database_password_";echo "mysql-server mysql-server/root_password_again password $_database_password_") | debconf-set-selections
     #Update apt sources and install
-    dpkg -i /opt/qoj/install/bundle/libv8-7.5_7.5.288.30-ppa1_bionic_amd64.deb
-    dpkg -i /opt/qoj/install/bundle/libv8-7.5-dev_7.5.288.30-ppa1_bionic_amd64.deb
-    apt-get install -y sudo vim ntp zip unzip curl wget apache2 libapache2-mod-xsendfile libapache2-mod-php php php-curl php-dev php-pear php-zip php-mysql php-mbstring mysql-server cmake fp-compiler re2c libyaml-dev python python3 python-requests python3-requests
+    dpkg -i /opt/qoj/install/bundle/3rdparty/libv8-7.5_7.5.288.30-ppa1_bionic_amd64.deb
+    dpkg -i /opt/qoj/install/bundle/3rdparty/libv8-7.5-dev_7.5.288.30-ppa1_bionic_amd64.deb
+    apt-get install -y sudo vim ntp zip unzip curl wget apache2 libapache2-mod-xsendfile libapache2-mod-php php php-curl php-dev php-pear php-zip php-mysql php-mbstring mysql-server cmake fp-compiler re2c libyaml-dev python3 python3-requests
     #Install PHP extensions
-    printf "/opt/libv8-7.5\n\n" | pecl install /opt/qoj/install/bundle/v8js-2.1.1.tgz
-    pecl install /opt/qoj/install/bundle/yaml-2.0.4.tgz 
+    pecl install /opt/qoj/install/bundle/3rdparty/yaml-2.0.4.tgz 
+    unzip /opt/qoj/install/bundle/3rdparty/v8js-a3eab09e96496fe232447f38780fb3f6c17876ef.zip -d /opt/qoj/install/bundle/3rdparty
+    cd /opt/qoj/install/bundle/3rdparty/v8js-php7
+    phpize && ./configure --with-php-config=/usr/bin/php-config --with-v8js=/opt/libv8-7.5 && make install && cd -
 }
 
 setLAMPConf(){
@@ -110,7 +112,7 @@ QOJEOF
     a2enmod rewrite headers && sed -i -e '172s/AllowOverride None/AllowOverride All/' /etc/apache2/apache2.conf
     #Create UOJ session save dir and make PHP extensions available
     mkdir --mode=733 /var/lib/php/uoj_sessions && chmod +t /var/lib/php/uoj_sessions
-    sed -i -e '865a\extension=v8js.so\nextension=yaml.so' /etc/php/7.2/apache2/php.ini
+    sed -i -e '912a\extension=v8js.so\nextension=yaml.so' /etc/php/7.4/apache2/php.ini
     #Set MySQL user directory and connection config
     usermod -d /var/lib/mysql/ mysql
     cat >/etc/mysql/mysql.conf.d/qoj_mysqld.cnf <<QOJEOF
@@ -121,15 +123,15 @@ collation-server=utf8mb4_unicode_ci
 init_connect='SET NAMES utf8mb4'
 init_connect='SET collation_connection = utf8mb4_unicode_ci'
 skip-character-set-client-handshake
-sql-mode=ONLY_FULL_GROUP_BY,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION
+sql-mode=ONLY_FULL_GROUP_BY,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION
 QOJEOF
 }
 
 setWebConf(){
     printf "\n\n==> Setting web files\n"
     #Set webroot path
-    ln -sf /opt/qoj/web/qoj /var/www/qoj
-    ln -sf /opt/qoj/web/manage /var/www/qoj_manage
+    ln -sf /opt/qoj/src/web_oj /var/www/qoj
+    ln -sf /opt/qoj/src/web_manage /var/www/qoj_manage
     mkdir -p /var/www/qoj/app/storage/submission
     mkdir -p /var/www/qoj/app/storage/tmp
     chown -R www-data /var/www/qoj/app/storage
@@ -143,7 +145,7 @@ file_put_contents('/var/www/qoj/app/.config.php', "<?php\nreturn ".str_replace('
 QOJEOF
 
 
-    cat >/opt/qoj/web/manage/data/config/config.inc.php <<QOJEOF
+    cat >/opt/qoj/src/web_manage/data/config/config.inc.php <<QOJEOF
 <?php
     
     define("MYSQL_IP", "localhost");
@@ -169,15 +171,17 @@ QOJEOF
     define("API_SECRET", "$_api_secret_");
 ?>
 QOJEOF
-    cp /opt/qoj/web/manage/data/config/config.inc.php  /opt/qoj/web/manage/event/data/config.inc.php
-    chown -R www-data:www-data /opt/qoj/web
-    
+    cp /opt/qoj/src/web_manage/data/config/config.inc.php  /opt/qoj/src/web_manage/event/data/config.inc.php
+    chown -R www-data:www-data /opt/qoj/src/web_oj
+    chown -R www-data:www-data /opt/qoj/src/web_manage
+
     #Import MySQL database
     service mysql restart
-    mysql -u root --password=$_database_password_ < /opt/qoj/install/bundle/app_uoj233.sql
-    mysql -u root --password=$_database_password_ < /opt/qoj/install/bundle/manage.sql
-    mysql -u root --password=$_database_password_ manage < /opt/qoj/install/bundle/manage_system.sql
+    mysql -u root --password=$_database_password_ < /opt/qoj/install/bundle/sql/app_uoj233.sql
+    mysql -u root --password=$_database_password_ < /opt/qoj/install/bundle/sql/manage.sql
+    mysql -u root --password=$_database_password_ manage < /opt/qoj/install/bundle/sql/manage_system.sql
     mysql -uroot -p$_database_password_ app_uoj233 -e "insert into api (\`token\`, \`secret\`, \`description\`) VALUES ('$_api_token_', '$_api_secret_', 'Server Manage Platform');"
+    echo "ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY '$_database_password_';" | mysql -u root --password=$_database_password_
 }
 
 setJudgeConf(){
@@ -189,11 +193,11 @@ setJudgeConf(){
     chown -R www-data:www-data /var/uoj_data
     #Compile uoj_judger and set runtime
     mkdir -p /home/local_main_judger
-    ln -sf /opt/qoj/judger /home/local_main_judger/judge_client
+    ln -sf /opt/qoj/src/judger /home/local_main_judger/judge_client
     mkdir -p /home/local_main_judger/judge_client/uoj_judger/result
     mkdir -p /home/local_main_judger/judge_client/uoj_judger/work
     chown -R local_main_judger:local_main_judger /home/local_main_judger
-    chown -R local_main_judger:local_main_judger /opt/qoj/judger
+    chown -R local_main_judger:local_main_judger /opt/qoj/src/judger
     su local_main_judger <<EOD
 ln -s /var/uoj_data /home/local_main_judger/judge_client/uoj_judger/data
 cd /home/local_main_judger/judge_client && chmod +x judge_client
@@ -220,7 +224,7 @@ QOJEOF
 initProgress(){
     printf "\n\n==> Doing initial config and start service\n"
     #Replace password placeholders
-    sed -i -e "s/_main_judger_password_/$_main_judger_password_/g" -e "s/_judger_socket_password_/$_judger_socket_password_/g" /opt/qoj/judger/.conf.json
+    sed -i -e "s/_main_judger_password_/$_main_judger_password_/g" -e "s/_judger_socket_password_/$_judger_socket_password_/g" /opt/qoj/src/judger/.conf.json
     sed -i -e "s/salt0/$(genRandStr 32)/g" -e "s/salt1/$(genRandStr 16)/g" -e "s/salt2/$(genRandStr 16)/g" -e "s/salt3/$(genRandStr 16)/g" -e "s/_judger_socket_password_/$_judger_socket_password_/g" /var/www/qoj/app/.config.php
     #Import judge_client to MySQL database
     service mysql start
