@@ -1,11 +1,20 @@
 {
+    "title": "Quest Online Judge",
+    "author": "QuestOJ",
+    "language": "zh-hans",
     "plugins": [
         "fontsettings",
         "sharing",
         "lunr",
         "search",
         "highlight",
-        "livereload",
-        "katex"
-    ]
+        "katex",
+        "favicon-absolute"
+    ], 
+    "pluginsConfig": { 
+        "favicon-absolute":{ 
+            "favicon": "/docs/pictures/favicon.ico", 
+            "appleTouchIconPrecomposed152": "/docs/pictures/apple-touch-icon-152x152.png" 
+        } 
+     }
 }
