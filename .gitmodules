@@ -7,3 +7,6 @@
 [submodule "src/web_manage"]
 	path = src/web_manage
 	url = https://github.com/QuestOJ/QuestOJ-Manage
+[submodule "src/judger"]
+	path = src/judger
+	url = https://github.com/QuestOJ/QuestOJ-Judger
