@@ -25,6 +25,7 @@ getAptPackage(){
     unzip /opt/qoj/install/bundle/3rdparty/v8js-a3eab09e96496fe232447f38780fb3f6c17876ef.zip -d /opt/qoj/install/bundle/3rdparty
     cd /opt/qoj/install/bundle/3rdparty/v8js-php7
     phpize && ./configure --with-php-config=/usr/bin/php-config --with-v8js=/opt/libv8-7.5 && make install && cd -
+    chmod 0644 /usr/lib/php/20190902/v8js.so
 }
 
 setLAMPConf(){
