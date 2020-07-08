@@ -17,11 +17,14 @@ getAptPackage(){
     export DEBIAN_FRONTEND=noninteractive
     (echo "mysql-server mysql-server/root_password password $_database_password_";echo "mysql-server mysql-server/root_password_again password $_database_password_") | debconf-set-selections
     #Update apt sources and install
-    dpkg -i /opt/qoj/install/bundle/3rdparty/libv8-7.5_7.5.288.30-ppa1_bionic_amd64.deb
-    dpkg -i /opt/qoj/install/bundle/3rdparty/libv8-7.5-dev_7.5.288.30-ppa1_bionic_amd64.deb
     apt-get install -y sudo vim ntp zip unzip curl wget apache2 libapache2-mod-xsendfile libapache2-mod-php php php-curl php-dev php-pear php-zip php-mysql php-mbstring mysql-server cmake fp-compiler re2c libyaml-dev python3 python3-requests
+    #Install libv8
+    cd /opt/qoj/install/bundle/3rdparty/
+    dpkg -i libv8-7.5_7.5.288.30-ppa1_bionic_amd64.deb
+    dpkg -i libv8-7.5-dev_7.5.288.30-ppa1_bionic_amd64.deb
+    cd -
     #Install PHP extensions
-    pecl install /opt/qoj/install/bundle/3rdparty/yaml-2.0.4.tgz 
+    pecl install /opt/qoj/install/bundle/3rdparty/yaml-2.1.0.tgz 
     unzip /opt/qoj/install/bundle/3rdparty/v8js-a3eab09e96496fe232447f38780fb3f6c17876ef.zip -d /opt/qoj/install/bundle/3rdparty
     cd /opt/qoj/install/bundle/3rdparty/v8js-php7
     phpize && ./configure --with-php-config=/usr/bin/php-config --with-v8js=/opt/libv8-7.5 && make install && cd -
