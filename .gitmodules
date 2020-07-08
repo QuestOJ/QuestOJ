@@ -1,0 +1,12 @@
+[submodule "src/tool_manage"]
+	path = src/tool_manage
+	url = https://github.com/QuestOJ/Manage-Tools.git
+[submodule "src/web_oj"]
+	path = src/web_oj
+	url = https://github.com/QuestOJ/QuestOJ-Web
+[submodule "src/web_manage"]
+	path = src/web_manage
+	url = https://github.com/QuestOJ/QuestOJ-Manage
+[submodule "src/judger"]
+	path = src/judger
+	url = https://github.com/QuestOJ/QuestOJ-Judger

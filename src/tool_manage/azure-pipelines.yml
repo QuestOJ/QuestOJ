@@ -1,0 +1,57 @@
+# Go
+# Build your Go project.
+# Add steps that test, save build artifacts, deploy, and more:
+# https://docs.microsoft.com/azure/devops/pipelines/languages/go
+
+trigger:
+  batch: true
+  branches:
+    include:
+    - master
+
+pr: none
+
+jobs:
+- job: build
+  timeoutInMinutes: 60
+
+  pool:
+    vmImage: 'Ubuntu-16.04'
+    
+  variables:
+    GOBIN:  '$(GOPATH)/bin' # Go binaries path
+    GOROOT: '/usr/local/go1.12' # Go installation path
+    GOPATH: '$(system.defaultWorkingDirectory)/gopath' # Go workspace path
+    modulePath: '$(GOPATH)/src/github.com/$(build.repository.name)' # Path to the module's code
+
+  steps:
+  - script: |
+      mkdir -p '$(GOBIN)'
+      mkdir -p '$(GOPATH)/pkg'
+      mkdir -p '$(modulePath)'
+      shopt -s extglob
+      shopt -s dotglob
+      mv !(gopath) '$(modulePath)'
+      echo '##vso[task.prependpath]$(GOBIN)'
+      echo '##vso[task.prependpath]$(GOROOT)/bin'
+    displayName: 'Set up the Go workspace'
+  - script: |
+      go version
+      go get -v -t -d ./...
+      make deps
+      if [ -f Gopkg.toml ]; then
+          curl https://raw.githubusercontent.com/golang/dep/master/install.sh | sh
+          dep ensure
+      fi
+      sudo apt-get install gcc g++ python2.7 python3
+      
+    workingDirectory: '$(modulePath)'
+    displayName: 'Get dependencies'
+  - script: |
+      make build-linux64
+    workingDirectory: '$(modulePath)'
+    displayName: 'Build for Linux 64'
+  - script: |
+      make build-linux32
+    workingDirectory: '$(modulePath)'
+    displayName: 'Build for Linux 32'

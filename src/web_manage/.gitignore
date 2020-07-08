@@ -1,0 +1,4 @@
+data/log/*.log
+data/config/config.inc.php
+event/data/log/*.log
+event/data/config.inc.php
